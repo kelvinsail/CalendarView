@@ -1,5 +1,11 @@
 package com.yifan.calendarview.object;
 
+import android.support.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Calendar;
+
 /**
  * 天 数据类
  *
@@ -25,18 +31,25 @@ public class Days {
     /**
      * 天
      */
-    public int day;
+    public int dayInMonth;
 
     /**
      * 月
      */
     public int month;
 
-    public Days(boolean lastMonth, boolean nextMonth, boolean isToday, int day, int month) {
+    @IntDef({Calendar.JANUARY,Calendar.FEBRUARY,Calendar.MARCH,Calendar.APRIL,
+            Calendar.MAY,Calendar.JUNE,Calendar.JULY,Calendar.AUGUST,Calendar.SEPTEMBER,
+            Calendar.OCTOBER,Calendar.NOVEMBER,Calendar.DECEMBER,Calendar.UNDECIMBER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Months {
+    }
+
+    public Days(boolean lastMonth, boolean nextMonth, boolean isToday, int dayInMonth, @Months int month) {
         this.lastMonth = lastMonth;
         this.nextMonth = nextMonth;
         this.isToday = isToday;
-        this.day = day;
+        this.dayInMonth = dayInMonth;
         this.month = month;
     }
 

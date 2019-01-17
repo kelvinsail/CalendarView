@@ -1,7 +1,6 @@
 package com.yifan.calendarview;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,9 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.yifan.calendarview.object.Days;
-import com.yifan.calendarview.utils.CalendarUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -22,7 +19,7 @@ import java.util.List;
 
 /**
  * 月视图View，可单独使用
- *
+ * <p>
  * Created by yifan on 2018/10/23.
  */
 public class MonthView extends View {
@@ -115,6 +112,16 @@ public class MonthView extends View {
     private HashMap<Integer, List<Integer>> mMarkData;
 
     /**
+     * 点击选中的序号
+     */
+    private int mSelectionIndex;
+
+    /**
+     * 是否点击了日期，如果移动，则false，防止误触
+     */
+    private boolean isClickDays;
+
+    /**
      * 点击事件
      */
     public OnDaysClickListener mListsner;
@@ -134,13 +141,6 @@ public class MonthView extends View {
     private void init() {
         //标记数据
         mMarkData = new HashMap<>();
-//        //模拟数据
-//        List<Integer> list = new ArrayList<>();
-//        list.add(12);
-//        list.add(16);
-//        list.add(21);
-//        list.add(30);
-//        mMarkData.put(10, list);
 
         //颜色
         mTextColor = getResources().getColor(R.color.text_month_view_day);
@@ -164,14 +164,22 @@ public class MonthView extends View {
         mPaint.setTextSize(mTextSize);
         mPaint.setTextAlign(Paint.Align.CENTER);
 
+        //计算数据
+        setDate(Calendar.getInstance());
+    }
+
+    /**
+     * 计算时间及数据
+     */
+    public void setDate(Calendar calendar) {
         //计算时间等数据
-        Calendar calendar = Calendar.getInstance();
         int today = calendar.get(Calendar.DAY_OF_MONTH);
-        int month = CalendarUtils.getIntOfMonth(calendar.get(Calendar.MONTH));//本月int
+        int month = calendar.get(Calendar.MONTH);//本月
 
         calendar.set(Calendar.DATE, 1);//把日期设置为当月第一天
         //获得1号是星期几
         int oneWhere = calendar.get(Calendar.DAY_OF_WEEK) - (isSunStart ? 0 : 1);//Calendar.MONDAY == 2
+        //一周起始是周日还是周一
         oneWhere = oneWhere == 0 ? 7 : oneWhere;//如果为0.则是周日
 
         //计算当月天数
@@ -189,16 +197,16 @@ public class MonthView extends View {
             last.add(Calendar.DATE, 0 - e);
 
             mList.add(new Days(true, false,
-                    false, last.get(Calendar.DATE), CalendarUtils.getIntOfMonth(last.get(Calendar.MONTH))));
+                    false, last.get(Calendar.DATE), last.get(Calendar.MONTH)));
         }
-        //当月天数
+        //当月的天数
         for (int i = 1; i <= mCurrentDays; i++) {
             mList.add(new Days(false, false, i == today, i, month));
             if (i == today) {
                 mSelectionIndex = mList.size() - 1;
             }
         }
-        //下月天数
+        //下个月的天数
         int nextCount = 42 - mList.size();
         month++;//月份+1
         for (int n = 1; n <= nextCount; n++) {
@@ -262,14 +270,14 @@ public class MonthView extends View {
 
             //绘制每天的内容文本
             drawEveryDay(mPaint, canvas, color, nameIndexH,
-                    nameIndexV + (int) mPaint.getTextSize() / 3, nameIndexV, days.day, days.isToday,
+                    nameIndexV + (int) mPaint.getTextSize() / 3, nameIndexV, days.dayInMonth, days.isToday,
                     i == mSelectionIndex, mSelectBackgroungRadius, mSelectBackgroundColor);
 
             //绘制标记
             List<Integer> list = mMarkData.get(days.month);
-            if (null != list && list.contains(days.day)) {
+            if (null != list && list.contains(days.dayInMonth)) {
                 drawEveryDayMark(mPaint, canvas, mMarkColor, mMarkRadius,
-                        nameIndexH, nameIndexV + (int) (mPaint.getTextSize() * 1.2), days.day);
+                        nameIndexH, nameIndexV + (int) (mPaint.getTextSize() * 1.2), days.dayInMonth);
             }
             //坐标换行
             if (i != 0 && (i - 6) % 7 == 0) {
@@ -354,7 +362,7 @@ public class MonthView extends View {
      * @param month
      * @param list
      */
-    public void setMarks(int month, List<Integer> list) {
+    public void addMarks(int month, List<Integer> list) {
         if (null == mMarkData) {
             mMarkData = new HashMap<>();
         } else {
@@ -365,9 +373,21 @@ public class MonthView extends View {
     }
 
     /**
-     * 点击选中的序号
+     * 移除标记
+     *
+     * @param month
      */
-    private int mSelectionIndex;
+    public void removeMarks(int month) {
+        if (null == mMarkData) {
+            mMarkData = new HashMap<>();
+            return;
+        }
+        mMarkData.remove(month);
+        invalidate();
+    }
+
+    float mDownClickY;
+    float mDownClickX;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -379,11 +399,20 @@ public class MonthView extends View {
                     Log.i(TAG, "onTouchEvent: 点击了标题");
                     return false;
                 }
+                mDownClickY = event.getY();
+                mDownClickX = event.getX();
+                isClickDays = true;
                 return true;
             case MotionEvent.ACTION_MOVE:
+                if (Math.abs(mDownClickY - event.getY()) > 15 ||
+                        Math.abs(mDownClickX - event.getX()) > 15) {
+                    isClickDays = false;
+                }
+                Log.i(TAG, "onTouchEvent: ACTION_MOVE x: " + Math.abs(mDownClickX - event.getX()));
+                Log.i(TAG, "onTouchEvent: ACTION_MOVE y: " + Math.abs(mDownClickY - event.getY()));
                 break;
             case MotionEvent.ACTION_UP:
-                if (null != mListsner) {
+                if (isClickDays && null != mListsner) {
 
                     //计算行数
                     int indexY = 0;
@@ -403,7 +432,7 @@ public class MonthView extends View {
                     }
                     //得到所在数组坐标
                     mSelectionIndex = indexX + (indexY - 1) * 7;
-                    mListsner.onClick(mSelectionIndex, mList.get(mSelectionIndex));
+                    mListsner.onClick(this, mSelectionIndex, mList.get(mSelectionIndex));
                     invalidate();
                 }
                 break;
@@ -416,7 +445,7 @@ public class MonthView extends View {
      */
     public interface OnDaysClickListener {
 
-        void onClick(int position, Days days);
+        void onClick(MonthView view, int position, Days days);
 
     }
 
