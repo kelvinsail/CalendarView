@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="text_month_view_day">#666666</color>
+    <color name="text_month_view_no_current">#e3e3e3</color>
+    <color name="text_month_view_current_day">#0198fd</color>
+
+    <color name="text_selected_text_color">#FFFFFF</color>
+    <color name="text_selected_mark_color">#0198fd</color>
+    <color name="text_selected_backgroung_color">#0198fd</color>
+
+</resources>
