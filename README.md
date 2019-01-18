@@ -1,7 +1,9 @@
 # CalendarView
-Android自定义实现日历控件
+Android自定义实现日历控件 2019-01-18，持续更新
 
-#2019-01-18，持续更新
+<img src="https://github.com/kelvinsail/CalendarView/blob/master/screen/screen.gif" width="360" height="640"/>
+
+
 ## 1、月历视图`MonthView`
 ### 1) 可单独使用，默认展示当月的月历
 ```
