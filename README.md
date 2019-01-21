@@ -1,7 +1,9 @@
-# CalendarView
-Android自定义实现日历控件
+# CalendarView 2019-01-18，持续更新
+Android简单的自定义实现日历控件，通过自定义绘制实现界面，支持标记、点击，ViewPager嵌套实现左右无限滚动
 
-#2019-01-18，持续更新
+![Alt Text](https://github.com/kelvinsail/CalendarView/blob/master/screen/screen.gif)
+
+
 ## 1、月历视图`MonthView`
 ### 1) 可单独使用，默认展示当月的月历
 ```
@@ -10,31 +12,31 @@ MonthView monthView = new MonthView(context);
 
 ### 2) 自定义`Drawer`，自定义实现UI
 ```
-    /**
-    * 初始化绘制器，画笔、颜色资源
-    */
-    void initDrawer(Resources resources);
+/**
+ * 初始化绘制器，画笔、颜色资源
+ */
+void initDrawer(Resources resources);
 
-    /**
-     * 绘制UI主函数，在MonthView中调用该方法
-     */
-    void drawMonth(Canvas canvas, MonthData data, int height, int width);
+/**
+ * 绘制UI主函数，在MonthView中调用该方法
+ */
+void drawMonth(Canvas canvas, MonthData data, int height, int width);
 
-    /**
-     * 绘制标题，drawMonth中调用该函数
-     */
-    void drawEveryDayTitle(Paint paint, Canvas canvas, int defaultColor, float x, float y, String title);
+/**
+ * 绘制标题，drawMonth中调用该函数
+ */
+void drawEveryDayTitle(Paint paint, Canvas canvas, int defaultColor, float x, float y, String title);
 
-    /**
-     * 绘制每一天，drawMonth中调用该函数
-     */
-    void drawEveryDay(Paint paint, Canvas canvas, int defaultColor, float x, float y, float textCenterY, int day,
+/**
+ * 绘制每一天，drawMonth中调用该函数
+ */
+void drawEveryDay(Paint paint, Canvas canvas, int defaultColor, float x, float y, float textCenterY, int day,
                       boolean isToday, boolean isSelected, float selectedBgRadius, int selectedBgColor);
 
-    /**
-     * 绘制标记，drawMonth中调用该函数
-     */
-    void drawEveryDayMark(Paint paint, Canvas canvas, int defaultColor, float radius, float x, float y, int day);
+/**
+ * 绘制标记，drawMonth中调用该函数
+ */
+void drawEveryDayMark(Paint paint, Canvas canvas, int defaultColor, float radius, float x, float y, int day);
 ```
 
 
