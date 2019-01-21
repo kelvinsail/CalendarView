@@ -1,7 +1,8 @@
 # CalendarView 2019-01-18，持续更新
 Android简单的自定义实现日历控件，通过自定义绘制实现界面，支持标记、点击，ViewPager嵌套实现左右无限滚动
 
-![Alt Text](https://github.com/kelvinsail/CalendarView/blob/master/screen/screen.gif)
+<img src="https://github.com/kelvinsail/CalendarView/blob/master/screen/screen.gif" width="360" height="640"/>
+
 
 
 ## 1、月历视图`MonthView`
@@ -52,6 +53,7 @@ public CalendarView(@NonNull Context context, @Nullable AttributeSet attrs) {
     setCurrentItem(INIT_POSITION);
 }
 ```
+
 ### 2）切换监听器
 ```
 mCalendarView.getAdapter().setOnMonthChangeListener(new OnMonthChangeListener() {
